@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # docstring = dokumentační řetězec; složí se do kouzelné proměnné __doc__
-"""Usage: grep.py PATTERN FILE
+"""Usage: grep.py PATTERN FILE [FILE...]
 
-Print lines from FILE matching regular expression PATTERN.
+Print lines from each FILE matching regular expression PATTERN.
 
 """
 #program env vyhledá preferovanou verzi programu, přes který se skript spustí (lokace pomocí "which env")
@@ -18,23 +18,30 @@ def grep(pattern, lines):
             print(line)
             
 def parse_argv(argv):
-    pattern,path = argv[1:]
-    return pattern, path
+    """Parse script arguments."""
+    # pokud dostaneme míň než dva parametry, ručně vyvoláme ValueError
+    if len(argv) < 2:
+        raise ValueError
+    # jinak bereme první parametr jako pattern a veškeré zbývající jako cesty k
+    # souborům na prohledání
+    pattern, paths = argv[0], argv[1:]
+    return pattern, paths
 
 def main():
     try:
-        pattern, path = parse_argv(sys.argv)
+        pattern, paths = parse_argv(sys.argv)
     except ValueError:
         print(__doc__.strip(), file=sys.stderr)
         sys.exit(1)
         
-    try:
-        with open(path) as file:
-            grep(pattern, file)
-    except FileNotFoundError as err:
-        print(__doc__.strip(), file=sys.stderr)
-        print(err, file=sys.stderr)
-        sys.exit(1) #úspěch nenastal, normální je 0
+    for path in paths:
+        try:
+            with open(path) as file:
+                grep(pattern, file)
+        except FileNotFoundError as err:
+            print(__doc__.strip(), file=sys.stderr)
+            print(err, file=sys.stderr)
+            sys.exit(1)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
