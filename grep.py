@@ -35,5 +35,6 @@ def main():
         print(__doc__.strip(), file=sys.stderr)
         print(err, file=sys.stderr)
         sys.exit(1) #úspěch nenastal, normální je 0
-        
-main()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
