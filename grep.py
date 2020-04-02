@@ -2,12 +2,14 @@
 # docstring = dokumentační řetězec; složí se do kouzelné proměnné __doc__
 """Usage: grep.py PATTERN FILE [FILE...]
 
-Print lines from each FILE matching regular expression PATTERN.
+Print lines from each FILE matching regular expression PATTERN. Print lines from each FILE matching regular expression PATTERN. Pass `-` for
+standard input.
 
 """
 #program env vyhledá preferovanou verzi programu, přes který se skript spustí (lokace pomocí "which env")
 # příkaz chmod +x grep.py
 import sys
+import fileinput as fi
 import regex as re
 
 def grep(pattern, lines):
@@ -33,15 +35,12 @@ def main():
     except ValueError:
         print(__doc__.strip(), file=sys.stderr)
         sys.exit(1)
-        
-    for path in paths:
-        try:
-            with open(path) as file:
-                grep(pattern, file)
-        except FileNotFoundError as err:
-            print(__doc__.strip(), file=sys.stderr)
-            print(err, file=sys.stderr)
-            sys.exit(1)
+    try:
+        grep(pattern, fi.input(paths))
+    except FileNotFoundError as err:
+        print(__doc__.strip(), file=sys.stderr)
+        print(err, file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
