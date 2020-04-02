@@ -10,7 +10,14 @@ standard input.
 # příkaz chmod +x grep.py
 import sys
 import fileinput as fi
+import logging as log
 import regex as re
+
+# modul logging umožňuje rozčlenit zprávy uživateli do různých úrovní
+# důležitosti. v pořadí od nejméně důležité to jsou DEBUG, INFO, WARNING, ERROR
+# a CRITICAL. defaultně se zobrazují jen zprávy s důležitostí WARNING a vyšší;
+# pokud chceme jít níž, musíme si to nakonfigurovat:
+log.basicConfig(level=log.INFO)
 
 def grep(pattern, lines):
     """Print lines matching pattern."""
@@ -33,13 +40,14 @@ def main():
     try:
         pattern, paths = parse_argv(sys.argv)
     except ValueError:
-        print(__doc__.strip(), file=sys.stderr)
+        log.critical(__doc__.strip())
         sys.exit(1)
+    log.info(f"Searching for {pattern!r} in {paths!r}.")
     try:
         grep(pattern, fi.input(paths))
     except FileNotFoundError as err:
-        print(__doc__.strip(), file=sys.stderr)
-        print(err, file=sys.stderr)
+        log.critical(__doc__.strip())
+        log.critical(err)
         sys.exit(1)
 
 if __name__ == "__main__":
